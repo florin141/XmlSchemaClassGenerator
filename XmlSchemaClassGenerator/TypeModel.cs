@@ -234,23 +234,23 @@ namespace XmlSchemaClassGenerator
                 switch (interfaceModelDerivedType)
                 {
                     case InterfaceModel derivedInterfaceModel:
-                    {
-                        foreach (var referenceTypeModel in derivedInterfaceModel.AllDerivedReferenceTypes())
                         {
-                            yield return referenceTypeModel;
-                        }
+                            foreach (var referenceTypeModel in derivedInterfaceModel.AllDerivedReferenceTypes())
+                            {
+                                yield return referenceTypeModel;
+                            }
 
-                        break;
-                    }
+                            break;
+                        }
                     case ClassModel derivedClassModel:
-                    {
-                        foreach (var baseClass in derivedClassModel.GetAllDerivedTypes())
                         {
-                            yield return baseClass;
-                        }
+                            foreach (var baseClass in derivedClassModel.GetAllDerivedTypes())
+                            {
+                                yield return baseClass;
+                            }
 
-                        break;
-                    }
+                            break;
+                        }
                 }
             }
         }
@@ -552,7 +552,7 @@ namespace XmlSchemaClassGenerator
 
         public List<PropertyModel> Properties { get; set; }
         public List<InterfaceModel> Interfaces { get; }
-        
+
         public void AddInterfaces(IEnumerable<InterfaceModel> interfaces)
         {
             foreach (var interfaceModel in interfaces)
@@ -560,7 +560,7 @@ namespace XmlSchemaClassGenerator
                 Interfaces.Add(interfaceModel);
                 interfaceModel.DerivedTypes.Add(this);
             }
-            
+
         }
     }
 
@@ -1129,7 +1129,8 @@ namespace XmlSchemaClassGenerator
                 {
                     var arrayItemAttribute = new CodeAttributeDeclaration(new CodeTypeReference(typeof(XmlArrayItemAttribute), Configuration.CodeTypeReferenceOptions),
                         propertyAttribute.Arguments.Cast<CodeAttributeArgument>().Where(x => !string.Equals(x.Name, "Order", StringComparison.Ordinal)).ToArray());
-                    if (!arrayItemProperty.XmlSchemaName.IsEmpty && !string.IsNullOrEmpty(arrayItemProperty.XmlSchemaName.Namespace))
+                    var namespacePresent = arrayItemAttribute.Arguments.OfType<CodeAttributeArgument>().Any(a => a.Name == "Namespace");
+                    if (!namespacePresent && !arrayItemProperty.XmlSchemaName.IsEmpty && !string.IsNullOrEmpty(arrayItemProperty.XmlSchemaName.Namespace))
                         arrayItemAttribute.Arguments.Add(new CodeAttributeArgument("Namespace", new CodePrimitiveExpression(arrayItemProperty.XmlSchemaName.Namespace)));
                     member.CustomAttributes.Add(arrayItemAttribute);
                 }
